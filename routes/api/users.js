@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const gravatar = require('gravatar');
+const bcrypt = require('bcryptjs');
 
 // Bring in user model
-const User = require('../../models/User')
+const User = require('../models/User');
 
 // @route      GET api/users/test
 // @desc       Tests users route
@@ -25,15 +26,26 @@ router.post('/register', (req, res) => {
                     r: 'pg', // Rating
                     d: 'mm' //Default
                 });
-
-                const newUser = new User({//else add new user to the User model in DB
+                //else add new user to the User model in DB 
+                const newUser = new User({
                     name: req.body.name,
                     email: req.body.email,
-                    avatar: avatar,
+                    avatar,
                     password: req.body.password
-                })
+                });
+                //generate salt and hash plain password to a bcrypt and then save the user in DB
+                bcrypt.genSalt(10, (err, salt) => {
+                    bcrypt.hash(newUser.password, salt, (err, hash) => {
+                      if (err) throw err;
+                      newUser.password = hash;
+                      newUser
+                        .save()
+                        .then(user => res.json(user))
+                        .catch(err => console.log(err));
+                    });
+                });
             }
-        })
+        });
 });
 
 //export router for server.js to pick it up
