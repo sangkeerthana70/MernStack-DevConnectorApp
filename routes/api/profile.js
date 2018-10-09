@@ -72,11 +72,24 @@ router.post(
                         { user: req.user.id },
                         { $set: profileFields },
                         { new: true }
-                        );
+                        ).then(profile => res.json(profile));
                 } else {
+                    // Create
+
+                    // Check if handle exists
+                    Profile.findOne({ handle: profileFields.handle }).then(profile => {
+                        if(profile) {
+                            errors.handle = 'That handle already exists';
+                            res.status(400).json(errors);
+                        }
+                        
+                        // Save Profile if there is no handle
+                        new Profile(profileFields).save().then(profile => res.json(profile));
+
+                    });
 
                 }
-            })
+            });     
         
     }
 );
