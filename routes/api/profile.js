@@ -63,7 +63,8 @@ router.post(
         if(req.body.facebook) profileFields.social.facebook = req.body.facebook;
         if(req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
         if(req.body.instagram) profileFields.social.instagram = req.body.instagram;
-
+        
+        // search for the user by id
         Profile.findOne({ user: req.user.id })
             .then(profile => {
                 if(profile) {
@@ -72,18 +73,18 @@ router.post(
                         { user: req.user.id },
                         { $set: profileFields },
                         { new: true }
-                        ).then(profile => res.json(profile));
+                    ).then(profile => res.json(profile));
                 } else {
                     // Create
 
-                    // Check if handle exists
+                    // Check if handle exists (means checking to see if the handle for the user already exists)
                     Profile.findOne({ handle: profileFields.handle }).then(profile => {
                         if(profile) {
                             errors.handle = 'That handle already exists';
                             res.status(400).json(errors);
                         }
                         
-                        // Save Profile if there is no handle
+                        // Save new Profile if there is no handle
                         new Profile(profileFields).save().then(profile => res.json(profile));
 
                     });
