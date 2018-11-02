@@ -72,14 +72,10 @@ router.get('/user/:user_id', (req, res) => {
 
             res.json(profile);
         })
-        .catch(err => res.status(404).json(err));
-
+        .catch(err => 
+            res.status(404).json({ profile: 'There is no profile for this user with this ID'})
+        );
 });
-
-
-
-
-
 
 // @route      POST api/profile
 // @desc       Create or Edit user profile 
