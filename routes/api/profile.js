@@ -38,6 +38,49 @@ router.get(
     }
 );
 
+// a backend API route to get a user profile with GET handle/:handle url in the browser
+// @route      GET api/profile/handle/:handle
+// @desc       Get profile by handle
+// @access     Public
+router.get('/handle/:handle', (req, res) => {
+    Profile.findOne({ handle: req.params.handle })
+        .populate('user', ['name', 'avatar'])
+        .then(profile => {
+            if(!profile) {
+                errors.noprofile = "There is no profile for this user" ;
+                res.status(404).json(errors);
+            }
+
+            res.json(profile);
+        })
+        .catch(err => res.status(404).json(err));
+
+});
+
+// a backend API route to get a user profile with GET user/:user_id url in the browser
+// @route      GET api/profile/user/:user_id (backend)
+// @desc       Get profile by user ID
+// @access     Public
+router.get('/user/:user_id', (req, res) => {
+    Profile.findOne({ user: req.params.user_id })
+        .populate('user', ['name', 'avatar'])
+        .then(profile => {
+            if(!profile) {
+                errors.noprofile = "There is no profile for this user" ;
+                res.status(404).json(errors);
+            }
+
+            res.json(profile);
+        })
+        .catch(err => res.status(404).json(err));
+
+});
+
+
+
+
+
+
 // @route      POST api/profile
 // @desc       Create or Edit user profile 
 // @access     Private
